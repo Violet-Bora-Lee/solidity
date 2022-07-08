@@ -697,12 +697,17 @@ string YulUtilFunctions::overflowCheckedIntMulFunction(IntegerType const& _type)
 						if or(sgt(product, <maxValue>), slt(product, <minValue>)) { <panic>() }
 					</gt128bit>
 				<!signed>
-					<?gt128bit>
-						// overflow, if x != 0 and y > maxValue/x
-						if and(iszero(iszero(x)), gt(y, div(<maxValue>, x))) { <panic>() }
-					<!gt128bit>
-						if gt(product, <maxValue>) { <panic>() }
-					</gt128bit>
+					<?256bit>
+						// overflow, if x != 0 and y != product/x
+						if and(iszero(iszero(x)), iszero(eq(y, div(product, x)))) { <panic>() }
+					<!256bit>
+						<?gt128bit>
+							// overflow, if x != 0 and y > maxValue/x
+							if and(iszero(iszero(x)), gt(y, div(<maxValue>, x))) { <panic>() }
+						<!gt128bit>
+							if gt(product, <maxValue>) { <panic>() }
+						</gt128bit>
+					</256bit>
 				</signed>
 			}
 			)")
@@ -713,6 +718,7 @@ string YulUtilFunctions::overflowCheckedIntMulFunction(IntegerType const& _type)
 			("cleanupFunction", cleanupFunction(_type))
 			("panic", panicFunction(PanicCode::UnderOverflow))
 			("gt128bit", _type.numBits() > 128)
+			("256bit", _type.numBits() == 256)
 			.render();
 	});
 }
