@@ -8,9 +8,9 @@ Overflow checked unsigned integer multiplication.
 """
 
 # Approximation with 16-bit base types.
-n_bits = 16
+n_bits = 12
 
-for type_bits in [4, 8, 12, 16]:
+for type_bits in [4, 8, 12]:
 
 	rule = Rule()
 
